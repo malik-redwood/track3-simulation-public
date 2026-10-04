@@ -65,6 +65,7 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("binary")
     ap.add_argument("--repo", default="../../track3-simulation-public")
+    ap.add_argument("--repo", default(os.path.dirname(os.path.abspath(__file__))))
     args = ap.parse_args(argv[1:])
 
     units = []
