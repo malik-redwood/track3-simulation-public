@@ -40,7 +40,7 @@ def _find_repo() -> "Path":
         if (cand / "units").is_dir():
             return cand
     return _P("../../../track3-simulation-public")
-
+REPO = _find_repo()
 
 def run(binary: str, scenario: Path, mode: str) -> list[list[str]]:
     p = subprocess.run([binary, str(scenario), mode], capture_output=True, text=True)
