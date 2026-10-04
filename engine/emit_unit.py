@@ -22,7 +22,25 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 UNIT = "t3-s001-price-time-priority"
-REPO = Path("../../track3-simulation-public")
+def _find_repo() -> "Path":
+    """Locate the track3-simulation-public checkout, wherever engine/ happens to live.
+
+    Honours $T3_REPO, then searches upward for a directory containing `units/`. This replaces a
+    hardcoded relative path that only worked for one directory layout.
+    """
+    import os
+    from pathlib import Path as _P
+    env = os.environ.get("T3_REPO")
+    if env and (_P(env) / "units").is_dir():
+        return _P(env)
+    here = _P(__file__).resolve().parent
+    for base in [here, *here.parents]:
+        if (base / "units").is_dir():
+            return base
+        cand = base / "track3-simulation-public"
+        if (cand / "units").is_dir():
+            return cand
+    return _P("../../../track3-simulation-public")
 
 
 def run(binary: str, *flags: str) -> list[list[str]]:
