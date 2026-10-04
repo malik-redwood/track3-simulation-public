@@ -19,7 +19,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-REF = "../../track3-simulation-public/units/t3-s001-price-time-priority/trace.parquet"
+REF = str(Path(__file__).resolve().parent.parent / "units/t3-s001-price-time-priority/trace.parquet")
 COLS = ("t_ns", "agent_id", "msg_type", "side", "price", "size", "order_id")
 
 
