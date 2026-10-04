@@ -118,7 +118,7 @@ def cases() -> list[dict]:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("binary")
-    ap.add_argument("--abides", default="C:/Users/redwoma/Desktop/abides-src")
+    ap.add_argument("--abides", default="../abides-src"))
     args = ap.parse_args(argv[1:])
 
     Oracle = load_real_oracle(Path(args.abides))
