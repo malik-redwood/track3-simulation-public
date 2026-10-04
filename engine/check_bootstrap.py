@@ -17,10 +17,10 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
-
+from pathlib import Path
 import pyarrow.parquet as pq
 
-REF = "../../track3-simulation-public/units/t3-s001-price-time-priority/message_trace.parquet"
+REF = str(Path(__file__).resolve().parent.parent / "units/t3-s001-price-time-priority//message_trace.parquet")
 
 
 def main(argv: list[str]) -> int:
