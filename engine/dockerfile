@@ -1,0 +1,38 @@
+# Track 3 submission image.
+#
+# FROM scratch with a single statically-linked binary. Rationale, from measurement rather than
+# preference (2 x 30 repeats, State.StartedAt -> State.FinishedAt, the organizer's own window):
+#
+#     scratch + static binary            92.5 ms
+#     python:3.13-slim, -c pass         115.0 ms   (+22.5 ms)
+#     + numpy / pandas / pyarrow        592.9 ms   (+500.4 ms, 6.41x)
+#
+# Final timing is whole-container wall clock averaged per unit, and the smallest unit has only
+# 604 events, so that start-up cost is most of the score on small units. Avoiding the Python
+# data stack is worth 4.27x; dropping Python entirely a further ~19%. Hence: no interpreter, no
+# numpy, no pyarrow, no CUDA (the GPU is optional and a CUDA context costs +65-365 ms on first
+# use, inside the timed window).
+#
+# The binary is built OUTSIDE this Dockerfile, cross-compiled from the dev box:
+#
+#   python -m ziglang c++ -std=c++20 -O2 -s -ffp-contract=off \
+#       -target x86_64-linux-musl -static -o simulate_linux simulate.cpp kernel.cpp
+#
+#   docker build --platform=linux/amd64 -t t3-sim:latest .
+#
+# -ffp-contract=off is MANDATORY: without it the compiler fuses a multiply and add into an FMA,
+# which changes the last bit of the random-number arithmetic and breaks exact trace
+# reproduction. Measured: 9 of 930 generator checks failed, all fixed by the flag.
+#
+# scratch has no shell, so the binary uses POSIX mkdir/opendir directly rather than system() or
+# popen(). It also needs no CA bundle, no libc and no /tmp: the container runs --network none
+# and writes only to the mounted /output.
+
+FROM scratch
+
+COPY simulate_linux /simulate
+
+# The harness passes the verb as the container command, so it lands as argv[1]:
+#   simulate       --config /input/scenario.json --out /output/trace.parquet
+#   simulate-batch --batch-dir /input/scenarios  --out-dir /output
+ENTRYPOINT ["/simulate"]
