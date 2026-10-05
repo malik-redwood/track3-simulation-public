@@ -1,5 +1,6 @@
+cat << 'EOF' > run_all.sh
 #!/usr/bin/env bash
-set -e  # Exit immediately if any command fails
+set -e
 
 echo "=== 1. Environment & Repository Check ==="
 cd /workspaces/track3-simulation-public
@@ -33,11 +34,9 @@ echo "=== 5. Compiling C++ Engine inside engine/ ==="
 cd engine
 rm -rf zig-cache ~/.cache/zig
 
-# Compile run_unit (using clang++ fallback if zig wrapper fails, or zig c++)
 python3 -m ziglang c++ -std=c++20 -O2 -Wno-everything -ffp-contract=off -o run_unit run_unit.cpp kernel.cpp || \
     clang++ -std=c++20 -O2 -Wno-everything -ffp-contract=off -o run_unit run_unit.cpp kernel.cpp
 
-# Compile static musl Linux simulator binary
 python3 -m ziglang c++ -std=c++20 -O2 -s -Wno-everything -ffp-contract=off -target x86_64-linux-musl -static -o simulate_linux simulate.cpp kernel.cpp || \
     clang++ -std=c++20 -O2 -Wno-everything -ffp-contract=off -o simulate_linux simulate.cpp kernel.cpp
 
@@ -53,3 +52,7 @@ cd /workspaces/track3-simulation-public
 python3 check_candidate.py --candidate engine/run_outputs
 
 echo "=== All steps completed successfully! ==="
+EOF
+
+chmod +x run_all.sh
+./run_all.sh
