@@ -46,7 +46,9 @@ echo "=== 6. Running Preflight & Sweep ==="
 python3 preflight.py simulate_linux || python preflight.py simulate_linux
 
 # Explicitly write outputs to 'run_outputs' inside the engine directory
-python3 sweep.py ./run_unit --out run_outputs
+# python3 sweep.py ./run_unit --out run_outputs
+
+python3 sweep.py ./run_unit --out /workspaces/track3-simulation-public/engine/run_outputs
 
 echo "=== 7. Final Validation Check ==="
 ./run_unit --version || true
