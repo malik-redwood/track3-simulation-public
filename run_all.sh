@@ -44,15 +44,19 @@ chmod +x simulate_linux validate_image.sh
 
 echo "=== 6. Running Preflight & Sweep ==="
 python3 preflight.py simulate_linux || python preflight.py simulate_linux
-python3 sweep.py ./run_unit
+
+# Explicitly write outputs to 'run_outputs' inside the engine directory
+python3 sweep.py ./run_unit --out run_outputs
 
 echo "=== 7. Final Validation Check ==="
 ./run_unit --version || true
+
 cd /workspaces/track3-simulation-public
 python3 check_candidate.py --candidate engine/run_outputs
 
 echo "=== All steps completed successfully! ==="
 EOF
 
+sed -i -e 's/\r$//' run_all.sh
 chmod +x run_all.sh
 ./run_all.sh
